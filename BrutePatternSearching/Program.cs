@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace KMP
+namespace BrutePatternSearching
 {
-    internal class Program
+    class Program
     {
-        public static void Main(string[] args)
+        static void Main(string[] args)
         {
             if (args.Length != 2)
             {
@@ -33,7 +37,6 @@ namespace KMP
                 return;
             }
 
-            //var matches = KMPSolver.FindAllMatches(text, pattern);
             var matches = BrutePatternSearching.FindAllMatches(text, pattern);
 
             try
