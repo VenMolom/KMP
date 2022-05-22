@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace KMP_Generator
 {
@@ -32,7 +33,7 @@ namespace KMP_Generator
             var outputFilename = args[5];
 
             char[] pattern = new char[patternLength];
-            char[] text = new char[textLength];
+            var textBuilder = new StringBuilder(textLength);
 
             Random rng = new Random();
             for (int i = 0; i < patternLength;)
@@ -45,10 +46,18 @@ namespace KMP_Generator
                     i++;
                 }
             }
-            for (int i = 0; i < textLength; i++)
+
+            var patternString = string.Join("", pattern);
+            var patternStringWithoutLast = patternString.Substring(0, patternString.Length - 1);
+            var patternLast = patternString[patternString.Length - 1];
+            
+            for (int i = 0; i < textLength / patternLength; i++)
             {
-                text[i] = '#';
+                textBuilder.Append(patternStringWithoutLast);
+                textBuilder.Append(patternLast + (rng.Next(0, 2) * 2 - 1));
             }
+
+            var text = textBuilder.ToString().ToCharArray();
             
             for (int i = 0; i < patternInsertionCount; i++)
             {
