@@ -8,7 +8,7 @@ namespace KMP
     {
         [DllImport("Kernel32.dll", CallingConvention = CallingConvention.Winapi)]
         private static extern void GetSystemTimePreciseAsFileTime(out long filetime);
-        
+
         public static void Main(string[] args)
         {
             if (args.Length != 2)
@@ -19,27 +19,34 @@ namespace KMP
                 return;
             }
 
-            var inputFilename = args[0];
+            var inputDir = args[0];
             var outputFilename = args[1];
 
-            string text, pattern;
-            try
+            var files = Directory.EnumerateFiles(inputDir, "10*", SearchOption.TopDirectoryOnly);
+            foreach (var fileName in files)
             {
-                using (var fr = File.OpenText(inputFilename))
+                var shortName = Path.GetFileNameWithoutExtension(fileName);
+                try
                 {
-                    pattern = fr.ReadLine();
-                    text = fr.ReadLine();
+                    using (var fr = File.OpenText(fileName))
+                    {
+                        var pattern = fr.ReadLine();
+                        var text = fr.ReadLine();
+
+                        KMPSolver.FindAllMatches(text, pattern);
+                        BrutePatternSearching.FindAllMatches(text, pattern);
+                        
+                        var kmpTime = Time(() => KMPSolver.FindAllMatches(text, pattern));
+                        var brutalTime = Time(() => BrutePatternSearching.FindAllMatches(text, pattern));
+                        Console.WriteLine($"{shortName}: KMP: {kmpTime} ms, Brutal: {brutalTime} ms");
+                    }
+                }
+                catch
+                {
+                    Console.WriteLine($"Nie można otworzyć pliku {shortName}");
+                    return;
                 }
             }
-            catch
-            {
-                Console.WriteLine($"Nie można otworzyć pliku {inputFilename}");
-                return;
-            }
-
-            var kmpTime = Time(() => KMPSolver.FindAllMatches(text, pattern));
-            var brutalTime = Time(() => BrutePatternSearching.FindAllMatches(text, pattern));
-            Console.Write($"KMP: {kmpTime} ms, Brutal: {brutalTime} ms");
             // try
             // {
             //     using (var sw = File.CreateText(outputFilename))
