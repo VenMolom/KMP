@@ -1,10 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace KMP
 {
     internal class Program
     {
+        [DllImport("Kernel32.dll", CallingConvention = CallingConvention.Winapi)]
+        private static extern void GetSystemTimePreciseAsFileTime(out long filetime);
+        
         public static void Main(string[] args)
         {
             if (args.Length != 2)
@@ -33,24 +37,32 @@ namespace KMP
                 return;
             }
 
-            //var matches = KMPSolver.FindAllMatches(text, pattern);
-            var matches = BrutePatternSearching.FindAllMatches(text, pattern);
+            var kmpTime = Time(() => KMPSolver.FindAllMatches(text, pattern));
+            var brutalTime = Time(() => BrutePatternSearching.FindAllMatches(text, pattern));
+            Console.Write($"KMP: {kmpTime} ms, Brutal: {brutalTime} ms");
+            // try
+            // {
+            //     using (var sw = File.CreateText(outputFilename))
+            //     {
+            //         foreach (var match in matches)
+            //         {
+            //             sw.WriteLine(match);
+            //         }
+            //     }
+            // }
+            // catch
+            // {
+            //     Console.WriteLine($"Nie można utworzyć pliku {outputFilename}");
+            //     return;
+            // }
+        }
 
-            try
-            {
-                using (var sw = File.CreateText(outputFilename))
-                {
-                    foreach (var match in matches)
-                    {
-                        sw.WriteLine(match);
-                    }
-                }
-            }
-            catch
-            {
-                Console.WriteLine($"Nie można utworzyć pliku {outputFilename}");
-                return;
-            }
+        public static double Time(Action action)
+        {
+            GetSystemTimePreciseAsFileTime(out var start);
+            action.Invoke();
+            GetSystemTimePreciseAsFileTime(out var end);
+            return (DateTime.FromFileTimeUtc(end) - DateTime.FromFileTimeUtc(start)).TotalMilliseconds;
         }
     }
 }
