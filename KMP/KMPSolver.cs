@@ -16,9 +16,9 @@ namespace KMP
             return prefixSuffix;
         }
 
-        private static ISet<int> FindPatternMatches(string text, string pattern, List<int> prefixSuffix)
+        private static IList<int> FindPatternMatches(string text, string pattern, List<int> prefixSuffix)
         {
-            var matches = new HashSet<int>();
+            var matches = new List<int>();
 
             TextPatternLoop(text, pattern, 0, prefixSuffix, (int i, int j) =>
             {
@@ -60,10 +60,78 @@ namespace KMP
             }
         }
 
-        public static ISet<int> FindAllMatches(string text, string pattern)
+        public static IList<int> FindAllMatches(string text, string pattern)
         {
             var prefixSuffix = FindPatternPrefixSuffix(pattern);
             return FindPatternMatches(text, pattern, prefixSuffix);
+        }
+
+        public static IList<int> FastAllMatches(string text, string pattern)
+        {
+            var prefixSuffix = new List<int>(pattern.Length + 1);
+            prefixSuffix.Add(0);
+            prefixSuffix.Add(0);
+
+            {
+                int j = 0;
+                for (int i = 1; i < pattern.Length; ++i)
+                {
+                    if (j < pattern.Length && pattern[i] == pattern[j])
+                    {
+                        j++;
+                    }
+                    else
+                    {
+                        j = prefixSuffix[j];
+
+                        while (j > 0 && pattern[i] != pattern[j])
+                        {
+                            j = prefixSuffix[j];
+                        }
+
+                        if (pattern[i] == pattern[j])
+                        {
+                            j++;
+                        }
+                    }
+
+                    prefixSuffix.Add(j);
+                }
+            }
+
+            var matches = new List<int>();
+
+            {
+                int j = 0;
+                for (int i = 0; i < text.Length; ++i)
+                {
+                    if (j < pattern.Length && text[i] == pattern[j])
+                    {
+                        j++;
+                    }
+                    else
+                    {
+                        j = prefixSuffix[j];
+
+                        while (j > 0 && text[i] != pattern[j])
+                        {
+                            j = prefixSuffix[j];
+                        }
+
+                        if (text[i] == pattern[j])
+                        {
+                            j++;
+                        }
+                    }
+
+                    if (j == pattern.Length)
+                    {
+                        matches.Add(i - pattern.Length + 1);
+                    }
+                }
+            }
+
+            return matches;
         }
     }
 }

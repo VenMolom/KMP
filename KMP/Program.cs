@@ -33,10 +33,10 @@ namespace KMP
                         var pattern = fr.ReadLine();
                         var text = fr.ReadLine();
 
-                        KMPSolver.FindAllMatches(text, pattern);
+                        KMPSolver.FastAllMatches(text, pattern);
                         BrutePatternSearching.FindAllMatches(text, pattern);
                         
-                        var kmpTime = Time(() => KMPSolver.FindAllMatches(text, pattern));
+                        var kmpTime = Time(() => KMPSolver.FastAllMatches(text, pattern));
                         var brutalTime = Time(() => BrutePatternSearching.FindAllMatches(text, pattern));
                         Console.WriteLine($"{shortName}: KMP: {kmpTime} ms, Brutal: {brutalTime} ms");
                     }

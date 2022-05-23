@@ -4,9 +4,9 @@ namespace KMP
 {
     static class BrutePatternSearching
     {
-        public static ISet<int> FindAllMatches(string text, string pattern)
+        public static IList<int> FindAllMatches(string text, string pattern)
         {
-            var result = new HashSet<int>();
+            var result = new List<int>();
 
             if (pattern.Length > text.Length)
             {
