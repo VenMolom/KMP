@@ -18,9 +18,9 @@ namespace KMP_Generator
                                   $"{Path.GetFileNameWithoutExtension(Environment.GetCommandLineArgs()[0])}\n" +
                                   $"[długość wzorca] > 0\n" +
                                   $"[liczba różnych liter wzorca] > 0 && < 36\n" +
-                                  $"[max. liczba powtórzeń liter] >= 0\n" +
-                                  $"[liczba losowych wstawień wzorca] >= 0\n" +
+                                  $"[max. liczba powtórzeń liter we wzorcu] >= 0\n" +
                                   $"[długość tekstu] > 0\n" +
+                                  $"[liczba losowych wstawień wzorca] >= 0\n" +
                                   $"[plik wyjściowy]\n");
                 return;
             }
@@ -28,8 +28,8 @@ namespace KMP_Generator
             var patternLength = int.Parse(args[0]);
             var patternCharsetCount = Math.Max(1, Math.Min('Z' - 'A' + 1, int.Parse(args[1])));
             var patternMaxCharRepeatCount = Math.Max(0, int.Parse(args[2]));
-            var patternInsertionCount = int.Parse(args[3]);
-            var textLength = int.Parse(args[4]);
+            var textLength = int.Parse(args[3]);
+            var patternInsertionCount = int.Parse(args[4]);
             var outputFilename = args[5];
 
             char[] pattern = new char[patternLength];
@@ -54,7 +54,7 @@ namespace KMP_Generator
             for (int i = 0; i < textLength / patternLength; i++)
             {
                 textBuilder.Append(patternStringWithoutLast);
-                textBuilder.Append(patternLast + (rng.Next(0, 2) * 2 - 1));
+                textBuilder.Append((char)(patternLast + (rng.Next(0, 2) * 2 - 1)));
             }
 
             var text = textBuilder.ToString().ToCharArray();
